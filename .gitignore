@@ -84,3 +84,10 @@ Thumbs.db
 *.rsuser
 *.local
 *.userprefs
+
+## Environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.test
