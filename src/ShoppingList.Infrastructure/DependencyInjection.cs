@@ -13,10 +13,20 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var connectionString = configuration.GetConnectionString("DefaultConnection")
+            ?? DatabaseConnectionStringBuilder.BuildConnectionString(configuration);
 
         services.AddDbContext<ShoppingListDbContext>(options =>
-            options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 36))));
+            options.UseMySql(
+                connectionString,
+                new MySqlServerVersion(new Version(8, 0, 36)),
+                mySqlOptions =>
+                {
+                    mySqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 5,
+                        maxRetryDelay: TimeSpan.FromSeconds(10),
+                        errorNumbersToAdd: null);
+                }));
 
         services.AddScoped<IItemRepository, ItemRepository>();
 
