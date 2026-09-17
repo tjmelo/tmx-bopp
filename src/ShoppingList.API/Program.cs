@@ -1,7 +1,9 @@
+using Microsoft.EntityFrameworkCore;
 using ShoppingList.API.Common.ExceptionHandlers;
 using ShoppingList.API.Endpoints.Itens;
 using ShoppingList.Application;
 using ShoppingList.Infrastructure;
+using ShoppingList.Infrastructure.Persistence;
 
 var envFile = FindEnvFile();
 if (envFile is not null)
@@ -22,6 +24,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ShoppingListDbContext>();
+    await dbContext.Database.MigrateAsync();
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();
