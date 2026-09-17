@@ -33,3 +33,4 @@ argument-hint: "[nome do endpoint]"
 - Execute o comando `dotnet run` para verificar se o endpoint está funcionando corretamente.
 - Certifique-se de que o endpoint está seguindo as diretrizes Clean Arquiteture e SOLID, coerentes com o projeto existente.
 - Adicione o endpoint ao swagger para que ele seja documentado e testado.
+- Atualize a documentação do projeto para incluir o novo endpoint, incluindo exemplos de requisições e respostas.

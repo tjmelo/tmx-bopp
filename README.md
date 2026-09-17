@@ -10,6 +10,8 @@ Aplicação de gerenciamento de **listas de compras**, desenvolvida em **.NET 10
 ![Testes](https://img.shields.io/badge/tests-passing-brightgreen?style=flat-square)
 ![Cobertura](https://img.shields.io/badge/coverage-TBD-yellow?style=flat-square)
 ![Linguagem](https://img.shields.io/badge/lang-C%23-239120?style=flat-square&logo=csharp)
+![Docker](https://img.shields.io/badge/docker-compose-2496ED?style=flat-square&logo=docker)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat-square&logo=mysql)
 
 ## Índice
 
@@ -20,6 +22,8 @@ Aplicação de gerenciamento de **listas de compras**, desenvolvida em **.NET 10
 - [Regras do Projeto](#regras-do-projeto)
 - [Workflow](#workflow)
 - [Como Executar](#como-executar)
+  - [Executar com Docker (recomendado)](#executar-com-docker-recomendado)
+  - [Parar e remover os contêineres](#parar-e-remover-os-contêineres)
 - [Como Rodar os Testes](#como-rodar-os-testes)
 - [Como Contribuir](#como-contribuir)
 - [Reportar Bugs e Solicitar Funcionalidades](#reportar-bugs-e-solicitar-funcionalidades)
@@ -39,6 +43,8 @@ A base inicial entrega a infraestrutura necessária para o desenvolvimento segur
 | ASP.NET Core | 10.0 |
 | xUnit | via `dotnet new xunit` |
 | C# | 13 (padrão do SDK 10) |
+| Docker / Docker Compose | containerização da API e do MySQL |
+| MySQL | 8.0 |
 
 ## Arquitetura
 
@@ -71,6 +77,9 @@ O projeto segue os princípios de **Clean Architecture** e **SOLID**:
 │   └── specs/                       # Especificações do projeto
 ├── .editorconfig                    # Regras de formatação de código
 ├── .gitignore                       # Arquivos ignorados pelo git
+├── .env.example                     # Variáveis de ambiente de exemplo
+├── Dockerfile                       # Imagem da API
+├── docker-compose.yml               # Orquestração de serviços (API + MySQL)
 ├── global.json                      # Versão do SDK do .NET
 └── ShoppingList.slnx                # Solução (formato .slnx)
 ```
@@ -100,8 +109,9 @@ Especificação detalhada: [`docs/specs/estrutura-do-projeto.md`](docs/specs/est
 Pré-requisitos:
 
 - [.NET SDK 10.0](https://dotnet.microsoft.com/download/dotnet/10.0) (o `global.json` fixa a versão).
+- [Docker](https://www.docker.com/products/docker-desktop/) com Docker Compose (recomendado para execução com banco de dados).
 
-Passos:
+### Executar com .NET local
 
 ```bash
 # Restaurar dependências
@@ -112,6 +122,57 @@ dotnet run --project src/ShoppingList.API
 ```
 
 A API estará disponível em `http://localhost:5000` (ajuste conforme o `launchSettings.json`).
+
+> Para execução local com banco MySQL apontando para a sua máquina, configure as variáveis em `.env` (use `.env.example` como base).
+
+### Executar com Docker (recomendado)
+
+Subir a API (porta `8081`) e o MySQL (porta `3308`) com o Docker Compose:
+
+```bash
+# Com logs em primeiro plano (Ctrl+C para parar)
+docker compose up
+
+# Ou em segundo plano (background)
+docker compose up -d
+```
+
+Verificar o status dos serviços:
+
+```bash
+docker compose ps         # ambos devem estar com status "healthy"
+curl http://localhost:8081/health   # resposta esperada: Healthy
+```
+
+Endpoints:
+
+| Serviço | Endereço |
+| --- | --- |
+| API | http://localhost:8081 |
+| MySQL | localhost:3308 |
+
+> **Portas:** o mapeamento de portas configurado é `8081:8080` (API) e `3308:3306` (MySQL) para evitar conflitos com instâncias locais. Se a porta já estiver em uso no seu ambiente, ajuste o lado esquerdo do mapeamento em `docker-compose.yml` (ex.: `8082:8080`).
+
+> **Ambiente:** as credenciais do banco são lidas do arquivo `.env` (variáveis `MYSQL_*`). Não versione credenciais reais — use `.env.example` como modelo.
+
+### Parar e remover os contêineres
+
+```bash
+# Parar os contêineres (mantém os dados do MySQL no volume)
+docker compose down
+
+# Parar e remover também o volume do MySQL (apaga os dados do banco)
+docker compose down --volumes
+```
+
+Comandos complementares:
+
+```bash
+docker compose stop       # apenas pausa os contêineres (não os remove)
+docker compose start      # reinicia os contêineres pausados
+docker compose logs -f    # acompanha os logs dos serviços
+docker compose ps --format table   # lista o status de cada serviço
+```
 
 ## Como Rodar os Testes
 

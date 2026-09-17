@@ -2,6 +2,7 @@ namespace ShoppingList.API.Endpoints.Itens;
 
 public sealed record ItensResponse(
     Guid Id,
+    Guid ShoppingListId,
     string Name,
     decimal Quantity,
     string? Unit,
@@ -10,6 +11,7 @@ public sealed record ItensResponse(
     DateTime? UpdatedAt);
 
 public sealed record CreateItensRequest(
+    Guid ShoppingListId,
     string Name,
     decimal Quantity,
     string? Unit);

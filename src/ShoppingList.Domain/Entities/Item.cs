@@ -8,6 +8,7 @@ public sealed class Item
     public const int MaxUnitLength = 50;
 
     public Guid Id { get; private set; }
+    public Guid ShoppingListId { get; private set; }
     public string Name { get; private set; } = string.Empty;
     public decimal Quantity { get; private set; }
     public string? Unit { get; private set; }
@@ -15,13 +16,16 @@ public sealed class Item
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
 
+    public ShoppingList? ShoppingList { get; private set; }
+
     private Item()
     {
     }
 
-    public Item(string name, decimal quantity, string? unit = null)
+    public Item(Guid shoppingListId, string name, decimal quantity, string? unit = null)
     {
         Id = Guid.NewGuid();
+        ShoppingListId = shoppingListId;
         CreatedAt = DateTime.UtcNow;
 
         AssignName(name);
