@@ -19,6 +19,7 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
@@ -28,6 +29,7 @@ app.UseSwaggerUI();
 app.UseExceptionHandler();
 
 app.MapItensEndpoints();
+app.MapHealthChecks("/health");
 
 app.Run();
 
