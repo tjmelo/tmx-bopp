@@ -11,7 +11,7 @@ if (envFile is not null)
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration["ConnectionStrings:DefaultConnection"] = BuildConnectionString(builder.Configuration);
+builder.Configuration["ConnectionStrings:DefaultConnection"] = DatabaseConnectionStringBuilder.BuildConnectionString(builder.Configuration);
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -32,17 +32,6 @@ app.MapItensEndpoints();
 app.MapHealthChecks("/health");
 
 app.Run();
-
-static string BuildConnectionString(IConfiguration configuration)
-{
-    var host = Environment.GetEnvironmentVariable("DB_HOST") ?? configuration["Db:Host"] ?? "localhost";
-    var port = Environment.GetEnvironmentVariable("DB_PORT") ?? configuration["Db:Port"] ?? "3306";
-    var database = Environment.GetEnvironmentVariable("DB_NAME") ?? configuration["Db:Name"] ?? "shoppinglist";
-    var user = Environment.GetEnvironmentVariable("DB_USER") ?? configuration["Db:User"] ?? "root";
-    var password = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? configuration["Db:Password"] ?? string.Empty;
-
-    return $"Server={host};Port={port};Database={database};User={user};Password={password};";
-}
 
 static string? FindEnvFile()
 {
