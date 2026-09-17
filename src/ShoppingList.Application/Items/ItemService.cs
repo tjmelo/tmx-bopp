@@ -27,7 +27,7 @@ public sealed class ItemService : IItemService
 
     public async Task<ItemDto> CreateAsync(CreateItemCommand command, CancellationToken cancellationToken = default)
     {
-        var item = new Item(command.Name, command.Quantity, command.Unit);
+        var item = new Item(command.ShoppingListId, command.Name, command.Quantity, command.Unit);
         await _repository.AddAsync(item, cancellationToken);
         return Map(item);
     }
@@ -64,6 +64,7 @@ public sealed class ItemService : IItemService
 
     private static ItemDto Map(Item item) => new(
         item.Id,
+        item.ShoppingListId,
         item.Name,
         item.Quantity,
         item.Unit,

@@ -74,7 +74,7 @@ public static class ItensEndpoint
         CancellationToken cancellationToken)
     {
         var item = await service.CreateAsync(
-            new CreateItemCommand(request.Name, request.Quantity, request.Unit),
+            new CreateItemCommand(request.ShoppingListId, request.Name, request.Quantity, request.Unit),
             cancellationToken);
 
         return TypedResults.Created($"/itens/{item.Id}", Map(item));
@@ -105,6 +105,7 @@ public static class ItensEndpoint
 
     private static ItensResponse Map(ItemDto item) => new(
         item.Id,
+        item.ShoppingListId,
         item.Name,
         item.Quantity,
         item.Unit,

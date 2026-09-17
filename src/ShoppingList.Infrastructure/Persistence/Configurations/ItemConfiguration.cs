@@ -21,5 +21,10 @@ public sealed class ItemConfiguration : IEntityTypeConfiguration<Item>
 
         builder.Property(item => item.Unit)
             .HasMaxLength(Item.MaxUnitLength);
+
+        builder.HasOne(item => item.ShoppingList)
+            .WithMany(list => list.Items)
+            .HasForeignKey(item => item.ShoppingListId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

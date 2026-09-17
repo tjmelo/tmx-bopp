@@ -10,11 +10,13 @@ public sealed class ItemServiceTests
     [Fact]
     public async Task CreateAsync_ShouldAddItemAndReturnDto()
     {
+        var shoppingListId = Guid.NewGuid();
         var repository = new FakeItemRepository();
         var service = new ItemService(repository);
 
-        var result = await service.CreateAsync(new CreateItemCommand("Café", 1, "kg"));
+        var result = await service.CreateAsync(new CreateItemCommand(shoppingListId, "Café", 1, "kg"));
 
+        Assert.Equal(shoppingListId, result.ShoppingListId);
         Assert.Equal("Café", result.Name);
         Assert.Equal(1m, result.Quantity);
         Assert.Equal("kg", result.Unit);
@@ -25,12 +27,13 @@ public sealed class ItemServiceTests
     [Fact]
     public async Task GetAllAsync_ShouldReturnAllItems()
     {
+        var shoppingListId = Guid.NewGuid();
         var repository = new FakeItemRepository
         {
             Items =
             {
-                new Item("Açúcar", 1),
-                new Item("Sal", 2),
+                new Item(shoppingListId, "Açúcar", 1),
+                new Item(shoppingListId, "Sal", 2),
             },
         };
         var service = new ItemService(repository);
@@ -53,7 +56,7 @@ public sealed class ItemServiceTests
     [Fact]
     public async Task GetByIdAsync_ShouldReturnItemWhenItExists()
     {
-        var item = new Item("Pão", 3);
+        var item = new Item(Guid.NewGuid(), "Pão", 3);
         var service = new ItemService(new FakeItemRepository { Items = { item } });
 
         var result = await service.GetByIdAsync(item.Id);
@@ -76,7 +79,7 @@ public sealed class ItemServiceTests
     [Fact]
     public async Task UpdateAsync_ShouldUpdateItemFields()
     {
-        var item = new Item("Pão", 3);
+        var item = new Item(Guid.NewGuid(), "Pão", 3);
         var repository = new FakeItemRepository { Items = { item } };
         var service = new ItemService(repository);
 
@@ -104,7 +107,7 @@ public sealed class ItemServiceTests
     [Fact]
     public async Task DeleteAsync_ShouldRemoveItem()
     {
-        var item = new Item("Queijo", 1);
+        var item = new Item(Guid.NewGuid(), "Queijo", 1);
         var repository = new FakeItemRepository { Items = { item } };
         var service = new ItemService(repository);
 
